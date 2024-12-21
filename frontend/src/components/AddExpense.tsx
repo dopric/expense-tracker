@@ -1,10 +1,23 @@
 import flatpickr from "flatpickr";
 import "preline/preline";
-import { useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
+import { addExpense } from "../store/actions/expenses";
+import { Store } from "../store/Store";
+import { useNavigate } from "react-router-dom";
+import { loadCategories } from "../store/actions/categories";
 
 export const AddExpense = () => {
-    useEffect(() => {
 
+    const [category, setCategory] = useState('')
+    const [amount, setAmount] = useState(0)
+    const [description, setDescription] = useState('')
+
+    const { state, dispatch } = useContext(Store)
+    const { categories } = state
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        loadCategories(dispatch);
         // Initialize flatpickr
         flatpickr('#jsPickr', {
             allowInput: true,
@@ -34,13 +47,28 @@ export const AddExpense = () => {
             )
         })
     }, [])
+
+
+
+    const formSubmitted = (event: any) => {
+        event.preventDefault()
+
+        const newExpense = { categoryId: category, amount, description: description }
+        addExpense(dispatch, newExpense)
+        navigate('/');
+
+        (document.querySelector('[data-overlay="#basic-modal"]') as HTMLElement)?.click();
+
+    }
     return (
         <>
+            {categories.loading && <p>Loading categories...</p>}
+            {categories.data.length === 0 && !categories.loading && <p>No categories available</p>}
 
             <button type="button" className="btn btn-primary" aria-haspopup="dialog" aria-expanded="false" aria-controls="basic-modal" data-overlay="#basic-modal" > Open modal </button>
 
             <div id="basic-modal" className="overlay modal overlay-open:opacity-100 hidden" role="dialog" aria-modal="true" aria-labelledby="basic-modal" aria-hidden="true">
-                <form className="needs-validation" noValidate>
+                <form className="needs-validation" noValidate onSubmit={formSubmitted}>
                     <div className="modal-dialog overlay-open:opacity-100">
                         <div className="modal-content">
                             <div className="modal-header">
@@ -50,17 +78,26 @@ export const AddExpense = () => {
                                 </button>
                             </div>
                             <div className="modal-body">
-                                <select className="select max-w-sm appearance-none" aria-label="select">
-                                    <option disabled selected>Category</option>
-                                    <option>Groceries</option>
-                                    <option>Transportation</option>
-                                    <option>Utilities</option>
-                                    <option>Entertainment</option>
-                                    <option>Health</option>
+                                <select className="select max-w-sm appearance-none" aria-label="select"
+                                    onChange={(e) => setCategory(e.target.value)} required>
+                                    <option disabled selected>--- select category ---</option>
+                                    {categories.data.map((category: any) => (
+                                        <option key={category.id} value={category.id}>{category.name}</option>
+                                    ))}
+
+
                                 </select>
                                 <div className="flex items-center gap-3">
                                     <label className="label text-base">Amount</label>
                                     <input type="number" id="amount" placeholder="Amount" className="input max-w-sm mt-2" min="0" max="100000"
+                                        onChange={(e) => setAmount(parseInt(e.target.value))}
+                                        required />
+                                </div>
+                                <span className="text-xs error-message">Please enter a valid amount</span>
+                                <div className="flex items-center gap-3">
+                                    <label className="label text-base">Description</label>
+                                    <input type="text" id="description" placeholder="Description" className="input max-w-sm mt-2"
+                                        onChange={(e) => setDescription(e.target.value)}
                                         required />
                                 </div>
                                 <span className="text-xs error-message">Please enter a valid amount</span>

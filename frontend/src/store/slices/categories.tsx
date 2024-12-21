@@ -1,8 +1,8 @@
 const categoriesSlice = (state: any, action: any) => {
     switch (action.type) {
-        case 'SET_CATEGORIES_LOADING':
+        case 'LOADING_CATEGORIES':
             return { ...state, loading: action.payload };
-        case 'SET_CATEGORIES_DATA':
+        case 'CATEGORIES_LOADED':
             return { ...state, data: action.payload };
         default:
             return state;

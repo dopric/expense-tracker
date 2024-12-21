@@ -4,7 +4,7 @@ import expensesSlice from "./slices/expenses";
 import categoriesSlice from "./slices/categories";
 import transactionsSlice from "./slices/transactions";
 
-export const Store = createContext({});
+export const Store = createContext({} as any);
 
 const initialState = {
     expenses: {
@@ -30,10 +30,10 @@ const rootReducer = (state: any, action: any) => ({
 
 const StoreProvider = ({ children }: { children: ReactNode }) => {
     const [state, dispatch] = useReducer(rootReducer, initialState);
-    // const value = { state, dispatch };
+    const value = { state, dispatch };
     return (
         // <Store.Provider value={value}>
-        <Store.Provider value={{ state, dispatch }}>
+        <Store.Provider value={value}>
             {children}
         </Store.Provider>
     )

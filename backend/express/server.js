@@ -27,6 +27,17 @@ app.get("/api/expenses", (req, res) =>
     res.json(expenses);
 });
 
+app.post("/api/expenses", (req, res) =>
+{
+    console.log("POST /api/expenses");
+    const newExpense = req.body;
+    newExpense.id = expenses.length + 1;
+    console.log(newExpense);
+    expenses.push(newExpense);
+    res.status(201).json(newExpense);
+    // res.status(202);
+});
+
 app.listen(port, () =>
 {
     console.log(`Server is running on port ${port}`);
