@@ -21,6 +21,22 @@ app.get("/api/categories", (req, res) =>
     res.json(categories);
 });
 
+app.put('/api/categories/:id', (req, res) =>
+{
+    console.log("PUT /api/categories/:id");
+    const updatedCategory = req.body;
+    const orgCategory = categories.find(c => c.id == req.params.id);
+    if (!orgCategory || orgCategory.id != updatedCategory.id)
+    {
+        res.status(404).send("Category not found");
+        return;
+    }
+    orgCategory.name = updatedCategory.name;
+    orgCategory.budget = updatedCategory.budget;
+    console.log(orgCategory);
+    res.status(200).json(orgCategory);
+})
+
 app.get("/api/expenses", (req, res) =>
 {
     console.log("GET /api/expenses");
